@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Ticket</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        .ticket-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .ticket-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.35em 0.65em;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="mb-4">Gestione Ticket</h1>
+        
+        <!-- Form per nuovo ticket -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Crea Nuovo Ticket</h5>
+                <form th:action="@{/tickets}" method="post">
+                    <div class="mb-3">
+                        <label for="oggetto" class="form-label">Oggetto</label>
+                        <input type="text" class="form-control" id="oggetto" name="oggetto" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stato" class="form-label">Stato</label>
+                        <select class="form-select" id="stato" name="stato">
+                            <option value="INVIATO">Inviato</option>
+                            <option value="IN_LAVORAZIONE">In Lavorazione</option>
+                            <option value="COMPLETATO">Completato</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Crea Ticket</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista Ticket -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Elenco Ticket</h5>
+                
+                <div th:if="${tickets.empty}">
+                    <div class="alert alert-info">Nessun ticket presente</div>
+                </div>
+
+                <div th:each="ticket : ${tickets}" class="card ticket-card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="card-title" th:text="${ticket.oggetto}"></h5>
+                                <p class="card-text mb-1">
+                                    <small class="text-muted" th:text="${#temporals.format(ticket.data, 'dd/MM/yyyy HH:mm')}"></small>
+                                </p>
+                                <span th:classappend="${ticket.stato == 'INVIATO'} ? 'bg-primary' 
+                                    : ${ticket.stato == 'IN_LAVORAZIONE'} ? 'bg-warning' 
+                                    : 'bg-success'" 
+                                    class="badge status-badge text-white" 
+                                    th:text="${ticket.stato}">
+                                </span>
+                            </div>
+                            <a th:href="@{/worklogs/ticket/{id}(id=${ticket.id})}" class="btn btn-sm btn-outline-secondary">
+                                Dettagli Lavorazioni
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
